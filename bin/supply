@@ -13,9 +13,12 @@ DEPS_IDX=$4
 export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
 
 
-ls $BUILDPACK_DIR
+
 echo "Hello World!" > "$DEPS_DIR/$DEPS_IDX/hello.txt"
 echo "Downloading Open Policy Agent"
 mkdir "$DEPS_DIR/$DEPS_IDX/bin"
-curl https://github.com/open-policy-agent/opa/releases/download/v0.10.5/opa_linux_amd64 > "$DEPS_DIR/$DEPS_IDX/bin/opa"
+wget https://github.com/open-policy-agent/opa/releases/download/v0.10.5/opa_linux_amd64 -O "$DEPS_DIR/$DEPS_IDX/bin/opa"
 chmod +x "$DEPS_DIR/$DEPS_IDX/bin/opa"
+
+echo "Showing buildpack content"
+ls "$BUILDPACK_DIR"
