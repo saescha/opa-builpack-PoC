@@ -15,4 +15,6 @@ export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
 
 ls $BUILDPACK_DIR
 echo "Hello World!" > "$DEPS_DIR/$DEPS_IDX/hello.txt"
-curl https://github.com/open-policy-agent/opa/releases/download/v0.10.5/opa_linux_amd64 > "$DEPS_DIR/$DEPS_IDX/opa"
+echo "Downloading Open Policy Agent"
+curl https://github.com/open-policy-agent/opa/releases/download/v0.10.5/opa_linux_amd64 > "$DEPS_DIR/$DEPS_IDX/bin/opa"
+chmod +x "$DEPS_DIR/$DEPS_IDX/bin/opa"
