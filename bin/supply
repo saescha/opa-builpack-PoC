@@ -8,17 +8,11 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
-
-
+curl --silent https://github.com/open-policy-agent/opa/releases/download/v0.10.7/opa_linux_amd64 > "$BUILD_DIR/opa"
+chmod +x "$BUILD_DIR/opa"
 export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
-
-
-
-echo "Hello World!" > "$DEPS_DIR/$DEPS_IDX/hello.txt"
-echo "Downloading Open Policy Agent"
-mkdir "$DEPS_DIR/$DEPS_IDX/bin"
-wget https://github.com/open-policy-agent/opa/releases/download/v0.10.5/opa_linux_amd64 -O "$DEPS_DIR/$DEPS_IDX/bin/opa"
-chmod +x "$DEPS_DIR/$DEPS_IDX/bin/opa"
-
-echo "Showing buildpack content"
-ls "$BUILDPACK_DIR"
+source "$BUILDPACK_DIR/scripts/install_go.sh"
+output_dir=$(mktemp -d -t supplyXXX)
+echo "-----> Running go build supply"
+GOROOT=$GoInstallDir/go GOPATH=$BUILDPACK_DIR $GoInstallDir/go/bin/go build -o $output_dir/supply opa/supply/cli
+$output_dir/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX"
