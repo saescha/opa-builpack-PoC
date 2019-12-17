@@ -1,19 +1,18 @@
 #!/bin/bash
-# This script provides dependencies for an app
-
-
 set -euo pipefail
 
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
-wget https://github.com/open-policy-agent/opa/releases/download/v0.10.7/opa_linux_amd64 -q -O "$BUILD_DIR/opa"
-chmod +x "$BUILD_DIR/opa"
+
 export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
-source "$BUILDPACK_DIR/.envrc"
 source "$BUILDPACK_DIR/scripts/install_go.sh"
 output_dir=$(mktemp -d -t supplyXXX)
+
 echo "-----> Running go build supply"
-# GOROOT=$GoInstallDir/go GOPATH=$BUILDPACK_DIR $GoInstallDir/go/bin/go build -o $output_dir/supply opa/supply/cli
-# $output_dir/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX"
+pushd $BUILDPACK_DIR
+GOROOT=$GoInstallDir/go $GoInstallDir/go/bin/go build -mod=vendor -o "$DEPS_DIR"/"$DEPS_IDX"/bin/varify ./src/nginx/varify
+GOROOT=$GoInstallDir/go $GoInstallDir/go/bin/go build -mod=vendor -o $output_dir/supply ./src/nginx/supply/cli
+
+$output_dir/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX"

@@ -40,6 +40,51 @@ type Supplier struct {
 	Log       *libbuildpack.Logger
 }
 
+type Config struct {
+	OpaVersion                 string       `yaml:"opa_version"`
+	AuthorzationContentVersion string       `yaml:"authorization_content_version"`
+	AdcPort                    int          `yaml:"adc_port"`
+	Bundle                     BundleConfig `yaml:"bundle"`
+}
+
+type BundleConfig struct {
+	Polling PollingConfig `yaml:"polling"`
+}
+
+type PollingConfig struct {
+	Min int `yaml:"min_delay_seconds"`
+	Max int `yaml:"max_delay_seconds"`
+}
+
+type OpaCfg struct {
+	Services OpaServiceCfg `yaml:"services"`
+	Bundles  OpaBundleCfg  `yaml:"bundles"`
+}
+
+type OpaServiceCfg struct {
+	BundleProvider OpaBundleProviderCfg `yaml:"bundle-provider"`
+}
+type OpaBundleProviderCfg struct {
+	Url         string               `yaml:"url"`
+	Credentials OpaCredentialsConfig `yaml:"credentials"`
+}
+type OpaCredentialsConfig struct {
+	Url       string       `yaml:"url"`
+	clientTls OpaClientTls `yaml:"client_tls"`
+}
+type OpaClientTls struct {
+	Cert       string `yaml:"cert"`
+	privateKey string `yaml:"private_key"`
+}
+type OpaBundleCfg struct {
+	Authz OpaAuthzCfg `yaml:"authz"`
+}
+type OpaAuthzCfg struct {
+	Service  string        `yaml:"service"`
+	Resource string        `yaml:"resource"`
+	Polling  PollingConfig `yaml:"polling"`
+}
+
 func (s *Supplier) Run() error {
 	s.Log.BeginStep("Supplying opa")
 
