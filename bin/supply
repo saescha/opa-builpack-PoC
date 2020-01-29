@@ -1,19 +1,53 @@
 #!/bin/bash
 # This script provides dependencies for an app
 
-
 set -euo pipefail
 
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
-wget https://github.com/open-policy-agent/opa/releases/download/v0.10.7/opa_linux_amd64 -q -O "$BUILD_DIR/opa"
-chmod +x "$BUILD_DIR/opa"
 export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
-source "$BUILDPACK_DIR/.envrc"
-source "$BUILDPACK_DIR/scripts/install_go.sh"
-output_dir=$(mktemp -d -t supplyXXX)
-echo "-----> Running go build supply"
-# GOROOT=$GoInstallDir/go GOPATH=$BUILDPACK_DIR $GoInstallDir/go/bin/go build -o $output_dir/supply opa/supply/cli
-# $output_dir/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX"
+
+
+opa_binary="$DEPS_DIR/DEPS_IDX/opa"
+opa_config="$BUILD_DIR/opa_config.yml"
+log_level="debug"
+opa_start="$DEPS_DIR/DEPS_IDX/start_opa.sh"
+
+wget https://github.com/open-policy-agent/opa/releases/download/v0.16.2/opa_linux_amd64 -q -O "$opa_binary"
+chmod +x "$opa_binary"
+
+cp "$BUILDPACK_DIR/scripts/start_opa.sh" "$opa_start"
+chmod +x "$opa_start"
+
+mkdir -p "$BUILD_DIR/.profile.d"
+
+echo "export opa_binary=$opa_binary opa_config=$opa_config log_level=$log_level opa_start=$opa_start" > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
+chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
+
+if ! [ -z VCAP_SERVICES ] && $bundle_provider=$(echo VCAP_SERVICES|jq '.ams[0].url' ) ; then
+bundle_path="cas/v1/bundle.tar.gz"
+else
+bundle_path="$BUNDLE_PATH"
+bundle_provider="$BUNDLE_PROVIDER"
+fi
+
+cat > "$opa_config" <<EOL
+---
+services:
+  bundle-provider:
+    url: $bundle_provider
+    credentials:
+      client_tls:
+        cert: $CF_INSTANCE_CERT
+        private_key: $CF_INSTANCE_KEY
+bundles:
+  authz:
+    service: bundle-provider
+    resource: $bundle_path 
+    polling:
+      min_delay_seconds: 10
+      max_delay_seconds: 180
+EOL
+
