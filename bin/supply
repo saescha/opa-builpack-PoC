@@ -13,7 +13,7 @@ binary_file="opa"
 config_file="opa_config.yml"
 start_file="start_opa.sh"
 
-rt_deps="./deps/$DEPS_IDX/"
+rt_deps="../deps/$DEPS_IDX/"
 dt_deps="$DEPS_DIR/$DEPS_IDX/"
 opa_binary="$dt_deps$binary_file"
 opa_config="$dt_deps$config_file"
