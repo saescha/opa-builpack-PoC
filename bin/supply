@@ -30,7 +30,7 @@ chmod +x "$opa_start"
 
 mkdir -p "$BUILD_DIR/.profile.d"
 
-echo "export opa_binary=$rt_deps$binary_file opa_config=$rt_deps$config_file log_level=$log_level opa_start=$rt_deps$start_file" > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
+echo "export opa_binary=$rt_deps$binary_file opa_config=$rt_deps$config_file log_level=$log_level OPA_START=$rt_deps$start_file" > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
 if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo VCAP_SERVICES|jq '.ams[0].url' ) ; then
