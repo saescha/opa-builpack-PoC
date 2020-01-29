@@ -27,10 +27,13 @@ echo "export opa_binary=$opa_binary opa_config=$opa_config log_level=$log_level 
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
 if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo VCAP_SERVICES|jq '.ams[0].url' ) ; then
-bundle_path="cas/v1/bundle.tar.gz"
+  bundle_path="cas/v1/bundle.tar.gz"
 else
-bundle_path="$BUNDLE_PATH"
-bundle_provider="$BUNDLE_PROVIDER"
+  if [ -z $BUNDLE_PATH ] || [ -z $BUNDLE_PROVIDER ] ; then 
+    >&2 echo "No ams service instance found in VCAP_SERVICES. If you want to use this buildpack without ams servcie instance, please provide BUNDLE_PROVIDER and BUNDLE_PATH in env"
+  fi
+  bundle_path="$BUNDLE_PATH"
+  bundle_provider="$BUNDLE_PROVIDER"
 fi
 
 cat > "$opa_config" <<EOL
