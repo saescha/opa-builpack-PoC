@@ -9,11 +9,18 @@ DEPS_DIR=$3
 DEPS_IDX=$4
 export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
 
+binary_file="opa"
+config_file="opa_config.yml"
+start_file="start_opa.sh"
 
-opa_binary="$DEPS_DIR/$DEPS_IDX/opa"
-opa_config="$BUILD_DIR/opa_config.yml"
+rt_deps="./deps/$DEPS_IDX/"
+dt_deps="$DEPS_DIR/$DEPS_IDX/"
+opa_binary="$dt_deps$binary_file"
+opa_config="$dt_deps$config_file"
 log_level="debug"
-opa_start="$DEPS_DIR/$DEPS_IDX/start_opa.sh"
+opa_start="$dt_deps$start_file"
+
+
 
 wget https://github.com/open-policy-agent/opa/releases/download/v0.16.2/opa_linux_amd64 -q -O "$opa_binary"
 chmod +x "$opa_binary"
@@ -23,7 +30,7 @@ chmod +x "$opa_start"
 
 mkdir -p "$BUILD_DIR/.profile.d"
 
-echo "export opa_binary=$opa_binary opa_config=$opa_config log_level=$log_level opa_start=$opa_start" > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
+echo "export opa_binary=$rt_deps$binary_file opa_config=$rt_deps$config_file log_level=$log_level opa_start=$rt_deps$start_file" > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
 if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo VCAP_SERVICES|jq '.ams[0].url' ) ; then
