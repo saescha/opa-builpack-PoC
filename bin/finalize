@@ -2,7 +2,7 @@
 # This script prepares and configures the app for launch.
 
 set -euo pipefail
-echo "finalizing"
+
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
