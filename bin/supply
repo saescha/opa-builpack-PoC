@@ -34,7 +34,7 @@ echo "export opa_binary=$rt_deps$binary_file opa_config=$rt_deps$config_file log
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
 echo "supply 2"
-if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo VCAP_SERVICES|jq '.ams[0].url' ) ; then
+if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo $VCAP_SERVICES|jq '.ams[0].url' ) ; then
   bundle_path="cas/v1/bundle.tar.gz"
 else
   if [ -z $BUNDLE_PATH ] || [ -z $BUNDLE_PROVIDER ] ; then 
