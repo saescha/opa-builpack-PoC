@@ -2,7 +2,7 @@
 # This script provides dependencies for an app
 
 set -euo pipefail
-
+echo "supplying"
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
@@ -21,7 +21,7 @@ log_level="debug"
 opa_start="$dt_deps$start_file"
 opa_port="9888"
 
-
+echo "supply 1"
 wget https://github.com/open-policy-agent/opa/releases/download/v0.16.2/opa_linux_amd64 -q -O "$opa_binary"
 chmod +x "$opa_binary"
 
@@ -33,6 +33,7 @@ mkdir -p "$BUILD_DIR/.profile.d"
 echo "export opa_binary=$rt_deps$binary_file opa_config=$rt_deps$config_file log_level=$log_level OPA_START=$rt_deps$start_file OPA_URL=http://localhost:$opa_port/ OPA_PORT=$opa_port" > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
+echo "supply 2"
 if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo VCAP_SERVICES|jq '.ams[0].url' ) ; then
   bundle_path="cas/v1/bundle.tar.gz"
 else
@@ -42,7 +43,7 @@ else
   bundle_path="$BUNDLE_PATH"
   bundle_provider="$BUNDLE_PROVIDER"
 fi
-
+echo "supply 3"
 cat > "$opa_config" <<EOL
 ---
 services:
