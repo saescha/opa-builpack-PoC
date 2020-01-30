@@ -19,7 +19,7 @@ opa_binary="$dt_deps$binary_file"
 opa_config="$dt_deps$config_file"
 log_level="debug"
 opa_start="$dt_deps$start_file"
-
+opa_port="9888"
 
 
 wget https://github.com/open-policy-agent/opa/releases/download/v0.16.2/opa_linux_amd64 -q -O "$opa_binary"
@@ -30,7 +30,7 @@ chmod +x "$opa_start"
 
 mkdir -p "$BUILD_DIR/.profile.d"
 
-echo "export opa_binary=$rt_deps$binary_file opa_config=$rt_deps$config_file log_level=$log_level OPA_START=$rt_deps$start_file" > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
+echo "export opa_binary=$rt_deps$binary_file opa_config=$rt_deps$config_file log_level=$log_level OPA_START=$rt_deps$start_file OPA_URL=http://localhost:$opa_port/ OPA_PORT=$opa_port" > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
 if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo VCAP_SERVICES|jq '.ams[0].url' ) ; then

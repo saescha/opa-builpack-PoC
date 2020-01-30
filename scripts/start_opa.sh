@@ -3,4 +3,4 @@
 env
 
 cat $opa_config
-$opa_binary run -s -c $opa_config --log-level=$log_level --addr=[]:9888
+$opa_binary run -s -c $opa_config --log-level=$log_level --addr=[]:$OPA_PORT
