@@ -55,7 +55,7 @@ services:
         cert: $CF_INSTANCE_CERT
         private_key: $CF_INSTANCE_KEY
 bundles:
-  authz:
+  amsBundle:
     service: bundle-provider
     resource: $bundle_path 
     polling:
