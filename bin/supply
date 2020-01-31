@@ -35,7 +35,7 @@ cat "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
 
-if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo $VCAP_SERVICES|jq '.ams[0].url' ) ; then
+if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo $VCAP_SERVICES|jq -e '.ams[0].url' ) ; then
   bundle_path="cas/v1/bundle.tar.gz"
 else
   if [ -z $BUNDLE_PATH ] || [ -z $BUNDLE_PROVIDER ] ; then 
