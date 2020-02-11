@@ -70,7 +70,7 @@ services:
         cert: $CF_INSTANCE_CERT
         private_key: $CF_INSTANCE_KEY
 discovery:
-  name: discovery
+  name: ams/discovery
   resource: sap/cas/v1/bundles/discovery.tar.gz
 eof
 
