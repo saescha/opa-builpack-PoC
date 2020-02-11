@@ -59,7 +59,7 @@ eof
 exit 0
 fi
 
-if [ -n "${VCAP_SERVICES+x}" ] && bp=$(echo "$VCAP_SERVICES"|jq -e '.ams[0].url' ) ; then
+if [ -n "${VCAP_SERVICES+x}" ] && bp=$(echo "$VCAP_SERVICES"|jq -e '.ams[0].credentials.url' ) ; then
 cat <<- eof > "$opa_config"
 ---
 services:
