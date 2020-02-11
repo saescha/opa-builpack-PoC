@@ -4,9 +4,10 @@
 set -euo pipefail
 
 BUILD_DIR=$1
-CACHE_DIR=$2
+#CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
+
 export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
 
 binary_file="opa"
@@ -35,21 +36,13 @@ cat "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
 
-if ! [ -z VCAP_SERVICES ] && bundle_provider=$(echo $VCAP_SERVICES|jq -e '.ams[0].url' ) ; then
-  bundle_path="cas/v1/bundle.tar.gz"
-else
-  if [ -z $BUNDLE_PATH ] || [ -z $BUNDLE_PROVIDER ] ; then 
-    >&2 echo "No ams service instance found in VCAP_SERVICES. If you want to use this buildpack without ams servcie instance, please provide BUNDLE_PROVIDER and BUNDLE_PATH in env"
-  fi
-  bundle_path="$BUNDLE_PATH"
-  bundle_provider="$BUNDLE_PROVIDER"
-fi
+if [ -n "${BUNDLE_PATH+x}" ] && [ -n "${BUNDLE_PROVIDER+x}" ] ; then
 
-cat > "$opa_config" <<EOL
+cat > "$opa_config" <<- eof
 ---
 services:
   bundle-provider:
-    url: $bundle_provider
+    url: $BUNDLE_PROVIDER
     credentials:
       client_tls:
         cert: $CF_INSTANCE_CERT
@@ -57,9 +50,32 @@ services:
 bundles:
   amsBundle:
     service: bundle-provider
-    resource: $bundle_path 
+    resource: $BUNDLE_PATH
     polling:
       min_delay_seconds: 10
       max_delay_seconds: 180
-EOL
+eof
 
+exit 0
+fi
+
+if [ -n "${VCAP_SERVICES+x}" ] && bp=$(echo "$VCAP_SERVICES"|jq -e '.ams[0].url' ) ; then
+cat <<- eof > "$opa_config"
+---
+services:
+  bundle-provider:
+    url: $bp
+    credentials:
+      client_tls:
+        cert: $CF_INSTANCE_CERT
+        private_key: $CF_INSTANCE_KEY
+discovery:
+  name: discovery
+  resource: sap/cas/v1/bundles/discovery.tar.gz
+eof
+
+else
+
+>&2 echo "No ams service found. Either bind an ams service instance or set BUNDLE_PATH and BUNDLE_PROVIDER in app environment"
+exit 1
+fi
