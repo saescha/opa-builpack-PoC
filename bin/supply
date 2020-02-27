@@ -79,3 +79,15 @@ else
 >&2 echo "No ams service found. Either bind an ams service instance or set BUNDLE_PATH and BUNDLE_PROVIDER in app environment"
 exit 1
 fi
+
+cat <<- eof > "$dt_deps/launch.yml"
+---
+processes:
+- type: "opa"
+  command: "$rt_deps$start_file"
+  limits:
+    memory: 100
+  platforms:
+    cloudfoundry:
+      sidecar_for: [ "web"]
+eof
