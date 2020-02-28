@@ -56,6 +56,20 @@ bundles:
       max_delay_seconds: 180
 eof
 
+echo "writing launch.yml"
+
+cat <<- eof > "$dt_deps/launch.yml"
+---
+processes:
+- type: "opa"
+  command: "$rt_deps$start_file"
+  limits:
+    memory: 100
+  platforms:
+    cloudfoundry:
+      sidecar_for: [ "web"]
+eof
+
 exit 0
 fi
 
@@ -79,6 +93,8 @@ else
 >&2 echo "No ams service found. Either bind an ams service instance or set BUNDLE_PATH and BUNDLE_PROVIDER in app environment"
 exit 1
 fi
+
+echo "writing launch.yml"
 
 cat <<- eof > "$dt_deps/launch.yml"
 ---
