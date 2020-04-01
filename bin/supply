@@ -23,14 +23,6 @@ log_level="debug"
 opa_start="$dt_deps$start_file"
 opa_port="9888"
 
-print_form() {
-  for file in "$BUILD_DIR/cas/*"
-  do
-    echo "--form 'data=@$file'"
-  done;
-  
-}
-
 wget https://github.com/open-policy-agent/opa/releases/download/v0.16.2/opa_linux_amd64 -q -O "$opa_binary"
 chmod +x "$opa_binary"
 
@@ -47,7 +39,7 @@ chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 if [ -n "${VCAP_SERVICES+x}" ] && ams_creds=$(echo "$VCAP_SERVICES"|jq -e '.ams[0].credentials' ) ; then
 
 echo "uploading auth stuff"
-curl --location --request POST "$(echo "$ams_creds" | jq '.url' )" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" "$(print_form)"
+curl --location --request POST "$(echo "$ams_creds" | jq '.url' )" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" "$(find "$BUILD_DIR/cas" -mindepth 1 -printf "--form 'data=@%P' ")"
 
 cat <<- eof > "$opa_config"
 ---
