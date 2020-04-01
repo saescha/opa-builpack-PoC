@@ -39,7 +39,7 @@ chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 if [ -n "${VCAP_SERVICES+x}" ] && ams_creds=$(echo "$VCAP_SERVICES"|jq -e '.ams[0].credentials' ) ; then
 
 echo "uploading auth stuff"
-curl --location --request POST "$(echo "$ams_creds" | jq '.url' )" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" "$(find "$BUILD_DIR/cas" -mindepth 1 -printf "--form data=@%p ")"
+curl --location --request POST "$(echo "$ams_creds" | jq '.url' )" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" "$(find "$BUILD_DIR/cas" -mindepth 1 -printf "--form 'data=@%p' ")"
 
 cat <<- eof > "$opa_config"
 ---
