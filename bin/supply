@@ -39,7 +39,7 @@ chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 if [ -n "${VCAP_SERVICES+x}" ] && ams_creds=$(echo "$VCAP_SERVICES"|jq -e '.ams[0].credentials' ) ; then
 
 echo "uploading auth stuff"
-curl --location --request POST "$(echo "$ams_creds" | jq -r '.url' )sap/cas/v1/bundles/rbac.tar.gz" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" --form 'data=@/tmp/app/cas/policy.rego'
+curl -v --location --request POST "$(echo "$ams_creds" | jq -r '.url' )sap/cas/v1/bundles/rbac.tar.gz" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" --form 'data=@/tmp/app/cas/policy.rego'
 
 cat <<- eof > "$opa_config"
 ---
