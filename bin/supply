@@ -29,30 +29,43 @@ chmod +x "$opa_binary"
 cp "$BUILDPACK_DIR/scripts/start_opa.sh" "$opa_start"
 chmod +x "$opa_start"
 
+
+if [ -n "${VCAP_SERVICES+x}" ] && ams_creds=$(echo "$VCAP_SERVICES"|jq -e '.ams[0].credentials' ) ; then
+
 mkdir -p "$BUILD_DIR/.profile.d"
 echo "creating $BUILD_DIR/.profile.d/0000_opa_env.sh"
-echo "export opa_binary=$rt_deps$binary_file opa_config=$rt_deps$config_file log_level=$log_level OPA_START=$rt_deps$start_file OPA_URL=http://localhost:$opa_port/ OPA_PORT=$opa_port" > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
+
+cat <<- eof > "$BUILD_DIR/.profile.d/0000_opa_env.sh"
+export AWS_ACCESS_KEY_ID=$(echo "$ams_creds" | jq -r '.object_store.access_key_id' )
+export AWS_SECRET_ACCESS_KEY=$(echo "$ams_creds" | jq -r '.object_store.secret_access_key' )
+export AWS_REGION=$(echo "$ams_creds" | jq -r '.object_store.region' )
+export opa_binary=$rt_deps$binary_file
+export opa_config=$rt_deps$config_file
+export log_level=$log_level 
+export OPA_URL=http://localhost:$opa_port/
+export OPA_PORT=$opa_port
+eof
+
 cat "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
 
-if [ -n "${VCAP_SERVICES+x}" ] && ams_creds=$(echo "$VCAP_SERVICES"|jq -e '.ams[0].credentials' ) ; then
-
 echo "uploading auth stuff"
-curl -v --location --request POST "$(echo "$ams_creds" | jq -r '.url' )sap/cas/v1/bundles/custom.tar.gz" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" $(find $BUILD_DIR/cas -mindepth 1 -printf "--form data=@%p ")
+curl -v --location --request POST "$(echo "$ams_creds" | jq -r '.url' )sap/cas/v1/bundles/SAP.tar.gz" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" $(find $BUILD_DIR/cas -mindepth 1 -printf "--form data=@%p ")
+
 
 cat <<- eof > "$opa_config"
 ---
 services:
-  bundle-provider:
-    url: "$(echo "$ams_creds" | jq -r  '.url' )"
+  s3:
+    url: https://$(echo "$ams_creds" | jq -r '.object_store.host' )/$(echo "$ams_creds" | jq -r '.object_store.bucket' )/
     credentials:
-      client_tls:
-        cert: $CF_INSTANCE_CERT
-        private_key: $CF_INSTANCE_KEY
-discovery:
-  name: ams/discovery
-  resource: sap/cas/v1/bundles/discovery.tar.gz
+      s3_signing:
+        environment_credentials: {}
+bundles:
+  SAP:
+    service: s3
+    resource: SAP.tar.gz
 eof
 
 else
