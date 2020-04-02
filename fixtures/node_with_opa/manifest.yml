@@ -10,3 +10,4 @@ applications:
     - zams
   health-check-type: process
   routes:
+  
