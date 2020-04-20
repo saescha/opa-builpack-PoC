@@ -49,11 +49,13 @@ eof
 cat "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
-
-echo "uploading auth stuff"
-curl --fail --location --request POST "$(echo "$ams_creds" | jq -r '.url' )sap/cas/v1/bundles/SAP.tar.gz" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" $(find $BUILD_DIR$BUNDLE_PATH/cas -mindepth 1 -printf "--form data=@%p ")
-
-
+if cas_files = $(find $BUILD_DIR$BUNDLE_PATH/cas -mindepth 1 ) ; then
+  echo "uploading cas folder with $cas_files"
+  curl --fail --location --request POST "$(echo "$ams_creds" | jq -r '.url' )sap/cas/v1/bundles/SAP.tar.gz" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" $(find $BUILD_DIR$BUNDLE_PATH/cas -mindepth 1 -printf "--form data=@%p ")
+else
+  >&2 echo "**WARNING** No cas folder found"
+fi
+ 
 cat <<- eof > "$opa_config"
 ---
 services:
