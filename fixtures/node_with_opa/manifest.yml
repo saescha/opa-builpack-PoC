@@ -9,5 +9,7 @@ applications:
   services:
     - zams
   health-check-type: process
+  env:
+    BUNDLE_PATH: ""
   routes:
   
