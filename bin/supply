@@ -50,7 +50,9 @@ chmod +x "$BUILD_DIR/.profile.d/0000_opa_env.sh"
 
 if cas_files=$(find $BUILD_DIR$BUNDLE_PATH/cas -mindepth 1 ) ; then
   echo "uploading cas folder with $cas_files"
-  if !curl --fail --location --request POST "$(echo "$ams_creds" | jq -r '.url' )sap/cas/v1/bundles/SAP.tar.gz" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" $(find $BUILD_DIR$BUNDLE_PATH/cas -mindepth 1 -printf "--form data=@%p ") ; then
+  if curl --fail --location --request POST "$(echo "$ams_creds" | jq -r '.url' )sap/cas/v1/bundles/SAP.tar.gz" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" $(find $BUILD_DIR$BUNDLE_PATH/cas -mindepth 1 -printf "--form data=@%p ") ; then
+    echo "upload success"
+  else
     curl --location --request POST "$(echo "$ams_creds" | jq -r '.url' )sap/cas/v1/bundles/SAP.tar.gz" --cert "$CF_INSTANCE_CERT" --key "$CF_INSTANCE_KEY" $(find $BUILD_DIR$BUNDLE_PATH/cas -mindepth 1 -printf "--form data=@%p ")
     exit 1
   fi
