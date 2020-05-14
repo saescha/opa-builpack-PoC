@@ -12,7 +12,7 @@ applications:
   env:
     AMS_DATA:  >
             {
-              "root": "/"
+              "root": "/",
               "directories": ["cas"]
             }
   routes:
