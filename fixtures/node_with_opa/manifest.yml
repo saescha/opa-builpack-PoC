@@ -4,12 +4,16 @@ applications:
   memory: 128M
   instances: 1
   buildpacks:
-    - https://github.com/saescha/opa-builpack-PoC.git#s3
+    - https://github.com/saescha/opa-builpack-PoC.git#tar_upload
     - nodejs_buildpack
   services:
     - zams
   health-check-type: process
   env:
-    BUNDLE_PATH: ""
+    AMS_DATA:  >
+            {
+              "root": "/",
+              "directories": ["cas/"]
+            }
   routes:
   
