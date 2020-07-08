@@ -43,6 +43,7 @@ export opa_config=$rt_deps$config_file
 export log_level=$log_level 
 export OPA_URL=http://localhost:$opa_port/
 export OPA_PORT=$opa_port
+export ADC_URL=http://localhost:$opa_port/
 eof
 
 cat "$BUILD_DIR/.profile.d/0000_opa_env.sh"
