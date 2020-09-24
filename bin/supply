@@ -22,7 +22,7 @@ log_level="debug"
 opa_start="$dt_deps$start_file"
 opa_port="9888"
 
-wget https://github.com/open-policy-agent/opa/releases/download/v0.16.2/opa_linux_amd64 -q -O "$opa_binary"
+wget https://github.com/open-policy-agent/opa/releases/download/v0.23.2/opa_linux_amd64 -q -O "$opa_binary"
 chmod +x "$opa_binary"
 
 cp "$BUILDPACK_DIR/scripts/start_opa.sh" "$opa_start"
