@@ -7,13 +7,14 @@ applications:
     - https://github.com/saescha/opa-builpack-PoC.git#tar_upload
     - nodejs_buildpack
   services:
-    - zams
+    - ams-test
   health-check-type: process
   env:
     AMS_DATA:  >
             {
               "root": "/",
-              "directories": ["cas/"]
+              "directories": ["cas/"],
+              "ams_app_name": "ams_node_example"
             }
   routes:
   
