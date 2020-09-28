@@ -1,3 +1,7 @@
-POLICY readAll {
-    GRANT read ON * ;
+SCHEMA {
+	salesOrderId: String
+}
+ 
+POLICY salesOrderRead {
+	GRANT read ON salesOrder where salesOrderId = '123';
 }
