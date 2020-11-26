@@ -29,7 +29,7 @@ cp "$BUILDPACK_DIR/scripts/start_opa.sh" "$opa_start"
 chmod +x "$opa_start"
 
 
-if [ -n "${VCAP_SERVICES+x}" ] && ams_creds=$(echo "$VCAP_SERVICES"|jq -e '.["ams"][0].credentials' ) ; then
+if [ -n "${VCAP_SERVICES+x}" ] && ams_creds=$(echo "$VCAP_SERVICES"|jq -e '.["authorization"][0].credentials' ) ; then
 
 mkdir -p "$BUILD_DIR/.profile.d"
 echo "creating $BUILD_DIR/.profile.d/0000_opa_env.sh"
@@ -90,7 +90,7 @@ eof
 
 else
 
->&2 echo "No ams service found."
+>&2 echo "No authorization service found."
 exit 1
 fi
 
